@@ -1,4 +1,4 @@
-package pl.vm.library.exception;
+package pl.vm.library.exception.model;
 
 /**
  * Exception used when operations are tried to made with wrong input parameters.

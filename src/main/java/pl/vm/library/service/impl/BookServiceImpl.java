@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.vm.library.entity.Book;
-import pl.vm.library.exception.ParameterValidationException;
+import pl.vm.library.exception.service.impl.BookExceptionService;
 import pl.vm.library.repository.BookRepository;
 import pl.vm.library.service.BookService;
 import pl.vm.library.to.BookTo;
@@ -22,6 +22,9 @@ public class BookServiceImpl implements BookService {
 
 	@Autowired
 	private BookRepository bookRepository;
+
+	@Autowired
+	private BookExceptionService bookExceptionService;
 
 	private ModelMapper mapper = new ModelMapper();
 
@@ -60,7 +63,7 @@ public class BookServiceImpl implements BookService {
 
 	private void validateNewBook(BookTo book) {
 		if (book.getId() != null) {
-			throw new ParameterValidationException("When creating new Book, the ID should be null.");
+			bookExceptionService.throwParameterValidationException();
 		}
 	}
 }

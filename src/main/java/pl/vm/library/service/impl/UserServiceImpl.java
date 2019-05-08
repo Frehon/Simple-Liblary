@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.vm.library.entity.User;
-import pl.vm.library.exception.EntityWithProvidedIdNotFoundException;
-import pl.vm.library.exception.ParameterValidationException;
+import pl.vm.library.exception.model.EntityWithProvidedIdNotFoundException;
+import pl.vm.library.exception.model.ParameterValidationException;
 import pl.vm.library.repository.UserRepository;
 import pl.vm.library.service.UserService;
 import pl.vm.library.to.UserTo;

@@ -1,24 +1,67 @@
 package pl.vm.library.to;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Transport Object of the Reservation class.
  */
 public class ReservationTo implements Serializable {
 
-	private static final long serialVersionUID = -60690548233543094L;
+    private static final long serialVersionUID = -60690548233543094L;
 
-	private Long id;
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    @NotNull
+    private Date fromDate;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @NotNull
+    private Date toDate;
 
-	// TODO You can add fields which you need to finish the task.
+    @NotNull
+    private Long bookId;
 
+    @NotNull
+    private Long userId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public Long getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(Long bookId) {
+        this.bookId = bookId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

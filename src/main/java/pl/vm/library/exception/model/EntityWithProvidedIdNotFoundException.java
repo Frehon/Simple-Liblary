@@ -1,4 +1,4 @@
-package pl.vm.library.exception;
+package pl.vm.library.exception.model;
 
 /**
  * Exception used when trying to operate on Entities which don't exist in the
