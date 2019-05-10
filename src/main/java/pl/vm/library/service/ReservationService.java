@@ -9,5 +9,6 @@ public interface ReservationService {
 
     ReservationTo create(ReservationTo reservation);
 
-	// TODO Extend reservation - change the "toDate" Date in the given reservation
+    ReservationTo extend(ReservationTo reservation);
+
 }

@@ -4,9 +4,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import pl.vm.library.Enum.ReservationType;
 import pl.vm.library.entity.Reservation;
 import pl.vm.library.exception.EntityExceptionService;
-import pl.vm.library.exception.model.ParameterValidationException;
 import pl.vm.library.exception.service.impl.ReservationExceptionService;
 import pl.vm.library.repository.BookRepository;
 import pl.vm.library.repository.ReservationRepository;
@@ -16,6 +16,7 @@ import pl.vm.library.to.ReservationTo;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -55,47 +56,100 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.map(reservationEntity, ReservationTo.class);
     }
 
-    // TODO Extend reservation - change the "toDate" Date in the given reservation
+    @Override
+    public ReservationTo extend(ReservationTo reservation) {
+
+        validateExistingReservation(reservation);
+        Reservation reservationEntity = mapper.map(reservation, Reservation.class);
+
+        reservationRepository.save(reservationEntity);
+
+        return mapper.map(reservationEntity, ReservationTo.class);
+    }
 
     private void validateNewReservation(ReservationTo reservation) {
 
-        Long reservationId = reservation.getId();
-        Long bookId = reservation.getBookId();
-        Long userId = reservation.getUserId();
-
-        validateReservationId(reservationId);
-        checkIfBookExist(bookId);
-        checkIfUserExist(userId);
-        checkIfBookIsNotReserved(reservation);
+        checkIfIdNotProvided(reservation.getId());
+        checkReservationDates(reservation.getFromDate(), reservation.getToDate());
+        checkIfBookExists(reservation.getBookId());
+        checkIfUserExists(reservation.getUserId());
+        checkIfThereAreNoOtherOverlappingReservations(reservation, ReservationType.NEW_RESERVATION);
     }
 
-    private void validateReservationId(Long reservationId) {
-        if (reservationId != null) {
-            throw new ParameterValidationException("When creating new Reservation, the ID should be null.");
+    private void validateExistingReservation(ReservationTo reservation) {
+
+        checkIfIdProvided(reservation.getId());
+        checkReservationDates(reservation.getFromDate(), reservation.getToDate());
+        checkIfBookExists(reservation.getBookId());
+        checkIfUserExists(reservation.getUserId());
+        checkIfReservationExists(reservation);
+        checkIfThereAreNoOtherOverlappingReservations(reservation, ReservationType.EXTENDING_EXISTING_RESERVATION);
+    }
+
+    private void checkIfIdProvided(Long reservationId) {
+
+        if (reservationId == null) {
+            reservationExceptionService.throwMissingIdException();
         }
     }
 
-    private void checkIfBookExist(Long bookId) {
+    private void checkIfIdNotProvided(Long reservationId) {
+
+        if (reservationId != null) {
+            reservationExceptionService.throwParameterValidationException();
+        }
+    }
+
+    private void checkReservationDates(Date fromDate, Date toDate) {
+
+        Date now = new Date();
+
+        if (fromDate.before(now) || toDate.before(fromDate)) {
+            reservationExceptionService.throwIncorrectDatesException();
+        }
+    }
+
+    private void checkIfBookExists(Long bookId) {
+
         if (!bookRepository.findById(bookId).isPresent()) {
             bookExceptionService.throwEntityNotFoundException();
         }
     }
 
-    private void checkIfUserExist(Long userId) {
+    private void checkIfUserExists(Long userId) {
+
         if (!userRepository.findById(userId).isPresent()) {
             userExceptionService.throwEntityNotFoundException();
         }
     }
 
-    private void checkIfBookIsNotReserved(ReservationTo reservation) {
+    private void checkIfReservationExists(ReservationTo reservation) {
 
-        Long bookId = reservation.getBookId();
-        Date fromDate = reservation.getFromDate();
-        Date toDate = reservation.getToDate();
+        if (!reservationRepository
+                .findReservationByIdFromDateBookAndUser(reservation.getId(), reservation.getBookId(), reservation.getFromDate(), reservation.getUserId())
+                .isPresent()) {
+            reservationExceptionService.throwExistingReservationNotFoundException();
+        }
+    }
 
-        Set<Reservation> conflictingReservations = reservationRepository.findOverlappingReservations(bookId, fromDate, toDate);
-        if (!conflictingReservations.isEmpty()) {
-            reservationExceptionService.throwBookReservedException(conflictingReservations);
+    private void checkIfThereAreNoOtherOverlappingReservations(ReservationTo reservation, ReservationType reservationType) {
+
+        Set<Reservation> overlappingReservations = new HashSet<>();
+
+        switch (reservationType) {
+            case NEW_RESERVATION: {
+                overlappingReservations =
+                        reservationRepository.findOverlappingReservations(reservation.getBookId(), reservation.getFromDate(), reservation.getToDate());
+                break;
+            }
+            case EXTENDING_EXISTING_RESERVATION: {
+                overlappingReservations =
+                        reservationRepository.findOverlappingReservations(reservation.getId(), reservation.getBookId(), reservation.getFromDate(), reservation.getToDate());
+            }
+        }
+
+        if (!overlappingReservations.isEmpty()) {
+            reservationExceptionService.throwBookReservedException(overlappingReservations);
         }
     }
 }

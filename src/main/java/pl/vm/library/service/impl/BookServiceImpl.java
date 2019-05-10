@@ -1,20 +1,18 @@
 package pl.vm.library.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import pl.vm.library.entity.Book;
 import pl.vm.library.exception.service.impl.BookExceptionService;
 import pl.vm.library.repository.BookRepository;
 import pl.vm.library.service.BookService;
 import pl.vm.library.to.BookTo;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,9 +54,8 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void delete(Long id) {
-		// TODO implement deleting Book - but only if the given book is not reserved by
-		// any user
+	public void delete(Long bookId) {
+
 	}
 
 	private void validateNewBook(BookTo book) {

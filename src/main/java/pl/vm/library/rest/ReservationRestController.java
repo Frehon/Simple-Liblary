@@ -3,9 +3,7 @@ package pl.vm.library.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import pl.vm.library.service.ReservationService;
 import pl.vm.library.to.ReservationTo;
 
@@ -24,6 +22,9 @@ public class ReservationRestController {
         return reservationService.create(reservation);
     }
 
-    // TODO Extend reservation - change the "toDate" Date in the given reservation
-
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReservationTo extend(@Valid @RequestBody ReservationTo reservation) {
+        return reservationService.extend(reservation);
+    }
 }

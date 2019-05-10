@@ -5,6 +5,7 @@ import pl.vm.library.entity.Reservation;
 import pl.vm.library.exception.EntityExceptionService;
 import pl.vm.library.exception.model.EntityWithProvidedIdNotFoundException;
 import pl.vm.library.exception.model.ExistingReservationException;
+import pl.vm.library.exception.model.ParameterValidationException;
 
 import java.util.Set;
 
@@ -21,5 +22,21 @@ public class ReservationExceptionService extends EntityExceptionService {
     @Override
     public void throwEntityNotFoundException() {
         throw new EntityWithProvidedIdNotFoundException("The Reservation with the given ID was not found.");
+    }
+
+    public void throwParameterValidationException() {
+        throw new ParameterValidationException("When creating new Reservation, the ID should be null.");
+    }
+
+    public void throwIncorrectDatesException() {
+        throw new ParameterValidationException("Wrong dates parameters.");
+    }
+
+    public void throwMissingIdException() {
+        throw new ParameterValidationException("When updating Reservation, the ID is required.");
+    }
+
+    public void throwExistingReservationNotFoundException() {
+        throw new ParameterValidationException("Reservation for given data does not exist.");
     }
 }
