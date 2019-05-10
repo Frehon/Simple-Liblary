@@ -3,6 +3,7 @@ package pl.vm.library.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import pl.vm.library.entity.Book;
 import pl.vm.library.entity.Reservation;
 
 import java.util.Date;
@@ -30,6 +31,7 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
 
     /**
      * Finding overlapping reservations for given book and time period
+     *
      * @param reservationId
      * @param bookId
      * @param fromDate
@@ -64,4 +66,12 @@ public interface ReservationRepository extends CrudRepository<Reservation, Long>
                                                                  @Param("bookId") Long book,
                                                                  @Param("fromDate") Date fromDate,
                                                                  @Param("userId") Long user);
+
+    /**
+     * Finding all reservation for given book
+     *
+     * @param book
+     * @return Set of reservations of given book
+     */
+    Set<Reservation> findAllByBook(Book book);
 }

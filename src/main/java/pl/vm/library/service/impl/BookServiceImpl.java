@@ -4,63 +4,89 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.vm.library.entity.Book;
+import pl.vm.library.entity.Reservation;
 import pl.vm.library.exception.service.impl.BookExceptionService;
 import pl.vm.library.repository.BookRepository;
+import pl.vm.library.repository.ReservationRepository;
 import pl.vm.library.service.BookService;
 import pl.vm.library.to.BookTo;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class BookServiceImpl implements BookService {
 
-	@Autowired
-	private BookRepository bookRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
-	@Autowired
-	private BookExceptionService bookExceptionService;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
-	private ModelMapper mapper = new ModelMapper();
+    @Autowired
+    private BookExceptionService bookExceptionService;
 
-	@Override
-	public List<BookTo> findAll() {
-		List<Book> books = (List<Book>) bookRepository.findAll();
+    private ModelMapper mapper = new ModelMapper();
 
-		return books.stream()
-				.map(bookEntity -> mapper.map(bookEntity, BookTo.class))
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<BookTo> findAll() {
+        List<Book> books = (List<Book>) bookRepository.findAll();
 
-	@Override
-	public BookTo findById(Long id) {
-		return bookRepository.findById(id)
-				.map(userEntity -> mapper.map(userEntity, BookTo.class))
-				.orElseThrow(EntityNotFoundException::new);
-	}
+        return books.stream()
+                .map(bookEntity -> mapper.map(bookEntity, BookTo.class))
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public BookTo create(BookTo bookTo) {
-		validateNewBook(bookTo);
+    @Override
+    public BookTo findById(Long id) {
+        return bookRepository.findById(id)
+                .map(userEntity -> mapper.map(userEntity, BookTo.class))
+                .orElseThrow(EntityNotFoundException::new);
+    }
 
-		Book bookEntity = mapper.map(bookTo, Book.class);
+    @Override
+    public BookTo create(BookTo bookTo) {
+        validateNewBook(bookTo);
 
-		bookRepository.save(bookEntity);
+        Book bookEntity = mapper.map(bookTo, Book.class);
 
-		return mapper.map(bookEntity, BookTo.class);
-	}
+        bookRepository.save(bookEntity);
 
-	@Override
-	public void delete(Long bookId) {
+        return mapper.map(bookEntity, BookTo.class);
+    }
 
-	}
+    @Override
+    public void delete(Long bookId) {
+        Book bookEntity = checkIfBookExist(bookId);
+        checkIfBookIsNotReserved(bookEntity);
 
-	private void validateNewBook(BookTo book) {
-		if (book.getId() != null) {
-			bookExceptionService.throwParameterValidationException();
-		}
-	}
+        bookRepository.delete(bookEntity);
+    }
+
+    private Book checkIfBookExist(Long bookId) {
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (!book.isPresent()) {
+            bookExceptionService.throwEntityNotFoundException();
+        }
+        return book.get();
+    }
+
+    private void checkIfBookIsNotReserved(Book book) {
+        Set<Reservation> reservations = reservationRepository.findAllByBook(book);
+
+        if (!reservations.isEmpty()) {
+            bookExceptionService.throwReservationsForBookExist();
+        }
+    }
+
+    private void validateNewBook(BookTo book) {
+        if (book.getId() != null) {
+            bookExceptionService.throwParameterValidationException();
+        }
+    }
 }
