@@ -62,10 +62,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void delete(Long bookId) {
+        checkIfIdProvided(bookId);
         Book bookEntity = checkIfBookExist(bookId);
         checkIfBookIsNotReserved(bookEntity);
 
         bookRepository.delete(bookEntity);
+    }
+
+    private void checkIfIdProvided(Long bookId) {
+        if (bookId == null) {
+            bookExceptionService.throwIdNotProvidedException();
+        }
     }
 
     private Book checkIfBookExist(Long bookId) {
@@ -80,7 +87,7 @@ public class BookServiceImpl implements BookService {
         Set<Reservation> reservations = reservationRepository.findAllByBook(book);
 
         if (!reservations.isEmpty()) {
-            bookExceptionService.throwReservationsForBookExist();
+            bookExceptionService.throwReservationsForBookExistException();
         }
     }
 

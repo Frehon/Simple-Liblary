@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 import pl.vm.library.exception.EntityExceptionService;
 import pl.vm.library.exception.model.EntityWithProvidedIdNotFoundException;
 
+/**
+ * Service that handle all exceptions related with user
+ */
 @Service
 public class UserExceptionService extends EntityExceptionService {
 

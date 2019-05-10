@@ -9,6 +9,9 @@ import pl.vm.library.exception.model.ParameterValidationException;
 
 import java.util.Set;
 
+/**
+ * Service that handle all exceptions related with reservation
+ */
 @Service
 public class ReservationExceptionService extends EntityExceptionService {
 
@@ -37,6 +40,6 @@ public class ReservationExceptionService extends EntityExceptionService {
     }
 
     public void throwExistingReservationNotFoundException() {
-        throw new ParameterValidationException("Reservation for given data does not exist.");
+        throw new ParameterValidationException("Reservation for given id does not exist.");
     }
 }

@@ -6,5 +6,4 @@ import pl.vm.library.entity.Book;
 
 public interface BookRepository extends CrudRepository<Book, Long> {
 
-
 }

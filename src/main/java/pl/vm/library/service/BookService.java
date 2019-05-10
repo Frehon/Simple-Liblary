@@ -26,7 +26,7 @@ public interface BookService {
 	/**
 	 * Creates a new Entity for the given object.
 	 * 
-	 * @param BookTo
+	 * @param book
 	 * @return the persisted Book
 	 */
 	public BookTo create(BookTo book);
@@ -34,7 +34,7 @@ public interface BookService {
 	/**
 	 * Deletes the Book with the given id.
 	 * 
-	 * @param BookTo
+	 * @param id
 	 * @return the persisted Book
 	 */
 	public void delete(Long id);

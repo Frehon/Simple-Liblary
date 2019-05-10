@@ -7,8 +7,18 @@ import pl.vm.library.to.ReservationTo;
  */
 public interface ReservationService {
 
+    /**
+     * Creates new Reservation
+     * @param reservation
+     * @return reservation transport object
+     */
     ReservationTo create(ReservationTo reservation);
 
+    /**
+     * Extend existing reservation's time range
+     * @param reservation
+     * @return reservation transport object
+     */
     ReservationTo extend(ReservationTo reservation);
 
 }

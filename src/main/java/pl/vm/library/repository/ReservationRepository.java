@@ -14,7 +14,7 @@ import java.util.Set;
 public interface ReservationRepository extends CrudRepository<Reservation, Long> {
 
     /**
-     * Finding if there are no other reservations for given book and time period
+     * Finding overlapping reservations for given book and time period
      *
      * @param bookId
      * @param fromDate
